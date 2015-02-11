@@ -1,16 +1,17 @@
 #include <iostream>
 #include <string>
 using namespace std;
-bool findInMatrix(const int matrix[][4], const int width, const int length, const int toFind) {
+
+bool findInMatrix(const int matrix[][4], const int rows, const int columns, const int toFind) {
     if(matrix == NULL) return false;
-    for(int i=0; i<width;) {
-        for(int j=length-1; j>=0;) {
-            if(toFind == matrix[i][j])
+    for(int row=0; row<rows;) {
+        for(int column=columns-1; column>=0;) {
+            if(toFind == matrix[row][column])
                 return true;
-            else if(toFind < matrix[i][j])
-                --j;
+            else if(toFind < matrix[row][column])
+                --column;
             else
-                ++i;
+                ++row;
         }
     }
     return false;
