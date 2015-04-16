@@ -1,8 +1,7 @@
-#include "stdafx.h"
 #include <algorithm>
 #include <string>
 #include <queue>
-#include "Structs.h"
+#include "Structs.hpp"
 using namespace std;
 
 class Boosted_string
@@ -17,7 +16,7 @@ public:
 		}
 		return s;
 	}
-	static std::vector<std::string> tokenise_string(const std::string& str,
+	static std::vector<std::string> tokenize_string(const std::string& str,
 		const std::string separator,
 		bool empty  = false )
 	{
@@ -45,7 +44,7 @@ TreeNode* createBinaryTree(string s)
 {
 	Boosted_string::remove_all(s, '{');
 	Boosted_string::remove_all(s, '}');
-	vector<std::string> sNodes = Boosted_string::tokenise_string(s, ",");
+	vector<std::string> sNodes = Boosted_string::tokenize_string(s, ",");
 	if (sNodes.size() == 0)
 		return NULL;
 	vector<int> nNode;
@@ -85,7 +84,7 @@ T* createBinaryTree(T *root, string s)
 {
 	Boosted_string::remove_all(s, '{');
 	Boosted_string::remove_all(s, '}');
-	vector<std::string> sNodes = Boosted_string::tokenise_string(s, ",");
+	vector<std::string> sNodes = Boosted_string::tokenize_string(s, ",");
 	if (sNodes.size() == 0)
 		return NULL;
 	vector<int> nNode;
@@ -120,4 +119,18 @@ T* createBinaryTree(T *root, string s)
 		}
 	}
 	return root;
+}
+
+template <typename T>
+void PrintVector(vector<T> vec) {
+    cout << "[ ";
+    bool is_first = true;
+    for(auto iter=vec.begin(), end=vec.end(); iter != end; ++iter) {
+        if(!is_first) 
+            cout << ", ";
+        else
+            is_first = false;
+        cout << *iter;
+    }
+    cout << " ]" << endl;
 }

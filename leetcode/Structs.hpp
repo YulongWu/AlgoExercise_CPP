@@ -1,5 +1,4 @@
 #pragma once
-#include "stdafx.h"
 struct TreeNode {
 	int val;
 	TreeNode *left;
