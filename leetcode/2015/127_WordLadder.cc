@@ -61,7 +61,7 @@ int ladderLength(string start, string end, unordered_set<string> &dict) {
 unordered_set<string>* _buildSet(const string &src) {
     vector<string> vec = Boosted_string::tokenize_string(src, ",");
     unordered_set<string> *set = new unordered_set<string>();
-    for_each(vec.begin(), vec.end(), [&] (string s){
+    for_each(vec.begin(), vec.end(), [&] (string s){  //notice: the use of for_each and lamda function
             set->insert(s);
             });
     return set;
@@ -69,7 +69,7 @@ unordered_set<string>* _buildSet(const string &src) {
 int main() {
 //    string start = "hit", end = "cog";
     string start = "qa", end = "sq";
-    unordered_set<string> *dict = new unordered_set<string>();
+    unordered_set<string> *dict;
 /*
     dict->insert("hot");
     dict->insert("dot");

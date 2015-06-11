@@ -1,14 +1,17 @@
 // input: a[0] will not be used to store value, a[len] will store the last value.
 #define ERROR -1
 #include <cstddef>
+#include "sort_util.cc"
+#include <iostream>
+using namespace std;
 
-void swap(int &v1, int &v2) {
+void my_swap(int &v1, int &v2) {
     v1 ^= v2;
     v2 ^= v1;
     v1 ^= v2;
 }
 template <typename T>
-void swap(T &v1, T &v2) {
+void my_swap(T &v1, T &v2) {
     T p = v1;
     v1 = v2;
     v2 = p;
@@ -18,10 +21,10 @@ void SimpleInsertSort(T a[], int len, int (*comp)(T, T)) {
     if(a == NULL || len <= 0)
         return;
     for(int i=2; i<=len; ++i) {
-        if(comp(a[i], a[i-1]) < 0) {  //***an improve which easy to forget
+        if(comp(a[i], a[i-1]) < 0) {  //***this improvement is easy to forget, but this improvement will make the program looks more complicated, the version without it see bolow.
             a[0] = a[i];
             int j=i;
-            for(; comp(a[j-1],a[0])>0 && j>1; --j) {
+            for(; comp(a[j-1],a[0])>0; --j) {
                 a[j] = a[j-1];
             }
             a[j] = a[0];
@@ -29,6 +32,22 @@ void SimpleInsertSort(T a[], int len, int (*comp)(T, T)) {
     }
 }
 
+template <typename T>
+void SimpleInsertSort_v2(T a[], int len, int (*comp)(T, T)) {
+    if(a == NULL || len <=0)
+        return;
+    for(int i=2; i <= len; ++i) {
+        a[0] = a[i];
+        int j = i;
+        for(j=i; comp(a[j-1], a[0]) > 0; --j)
+            a[j] = a[j-1];
+        a[j] = a[0];
+    }
+}
+
+/*
+ * The time complexity is still O(n^2), due to the times of movement
+ */
 template <typename T>
 void BinaryInsertSort(T a[], int len, int (*comp)(T, T)) {
     if(a == NULL || len <= 0)
@@ -38,17 +57,18 @@ void BinaryInsertSort(T a[], int len, int (*comp)(T, T)) {
             int low = 1, high = i-1;
             while(low <= high) {  //*don't forget "="
                 int mid = (low+high)/2;
-                if(comp(a[i], a[mid]) >= 0)  //***in order to make sort stable, we should merge bigger and equal together.
+                if(comp(a[i], a[mid]) >= 0)  //***in order to make sort stable, we should consider a[mid] < a[i] and a[mid] == a[i] the same.
 //** It's a[i] >= a[mid], not a[mid] >= a[i]!
                     low = mid+1;
                 else
                     high = mid-1;
             }
             a[0] = a[i];
-            for(int j=i-1; j > high; --j) {
-                a[j+1] = a[j];
+            int j;
+            for(j=i; j > low; --j) {
+                a[j] = a[j-1];
             }
-            a[high+1] = a[0];
+            a[j] = a[0];
         }
     }
 }
@@ -65,6 +85,25 @@ void BubbleSort(T a[], int len, int (*comp)(T, T)) {
         }
     }
 }
+/*
+ * Given the array is approximate sorted, there is a improvement for BubbleSort.
+ * Consider this case: 8, 2, 3, 4, 5, 6, 1, 7, in which only two elements(8 and 1) is unordered. So we improvement the bubble sort as following to deal with this kind of cases.
+ */
+template <typename T>
+void BubbleSort_v2(T a[], int len, int (*comp)(T, T)) {
+    int low = 1, high = len;
+    for(; low < high; ) {
+        for(int i = low; i < high; ++i)
+            if(comp(a[i], a[i+1]) > 0)
+                swap(a[i], a[i+1]);
+        --high;
+        for(int i = high; i > low; --i)
+            if(comp(a[i], a[i-1]) < 0)
+                swap(a[i], a[i-1]);
+        ++low;
+    }
+}
+
 template <typename T>
 int Partition(T a[], int start, int end) {
     if(start > end)
@@ -81,14 +120,33 @@ int Partition(T a[], int start, int end) {
     a[low] = pivot;
     return low;
 }
+/*
+ * This partition method is easier to be understand than previous one, but it result in more times of movements for many cases.
+ */
+template <typename T>
+int Partition_v2(T a[], int start, int end) {
+    int wall = start, cur = start;
+    while(cur < end) {
+        if(a[cur] < a[end]) {
+            my_swap(a[wall], a[cur]);
+            ++wall;
+        }
+        ++cur;
+    }
+    my_swap(a[wall], a[end]);
+    return wall;
+}
 // Following is Quick Sort code.
 template <typename T>
 void QSort(T a[], int start, int end) {
+    int split;
     if(start < end) {
-        int split = Partition<T>(a, start, end);
+        split = Partition_v2<T>(a, start, end);
         QSort(a, start, split-1);
         QSort(a, split+1, end);
     }
+    cout << "split: " << split << endl;
+    print(a+start, end-start+1);
 }
 template <typename T>
 void QuickSort(T a[], int len) {
@@ -121,19 +179,15 @@ void MaxHeapAdjust(int a[], int len, int root_pos) {
         throw ERROR;
     if(2*root_pos > len)
         return;
-    else if(2*root_pos+1 > len) {
-        if(a[root_pos] < a[2*root_pos]) {
-            swap(a[root_pos], a[2*root_pos]);
-            MaxHeapAdjust(a, len, 2*root_pos);
-        }
-    }
+    else if(2*root_pos+1 > len && a[root_pos] < a[2*root_pos]) 
+        my_swap(a[root_pos], a[2*root_pos]);
     else {
         int max_pos = a[root_pos*2] > a[root_pos*2+1] ? root_pos*2:root_pos*2+1;
-        swap(a[root_pos], a[max_pos]);
-        MaxHeapAdjust(a, len, max_pos);  //Actually there's a more beautiful way instead of recursion for heap adjust, see MaxHeapAdjust2 following.
+        my_swap(a[root_pos], a[max_pos]);
+        MaxHeapAdjust(a, len, max_pos);  //Actually there's a more elegant  way, instead of recursion for heap adjust, see MaxHeapAdjust_v2 following.
     }
 }
-void MaxHeapAdjust2(int a[], int len, int root_pos) {
+void MaxHeapAdjust_v2(int a[], int len, int root_pos) {
     if(!a || len <= 0 || root_pos < 1 || root_pos > len) 
         return;
     int prev_pos = root_pos;
@@ -153,12 +207,12 @@ void MaxHeapSort(int a[], int len) {
         return;
     //build max heap
     for(int r=len/2; r>=1; --r) {
-        MaxHeapAdjust2(a, len, r);
+        MaxHeapAdjust(a, len, r);
     }
     //maxheap sort
     for(int trans_pos=len; trans_pos > 1; --trans_pos) {
-        swap(a[1], a[trans_pos]);
-        MaxHeapAdjust2(a, trans_pos-1, 1);
+        my_swap(a[1], a[trans_pos]);
+        MaxHeapAdjust_v2(a, trans_pos-1, 1);
     }
 }
 //following is merge sort code
@@ -206,11 +260,11 @@ void MergeSort2(int a[], int len) {
     int step=1;
     int *b1=a, *b2=buf;
     while(step < len) {
-        swap(b1, b2);
+        my_swap(b1, b2);
         for(int start=1; start+step <= len; start+=step*2) {
             int s = start, m = start + step - 1, h = start + step*2 - 1 <= len ? start+step*2-1 : len;
             int t1 = s, t2 = m + 1, t_pos = s;
-            for(;t1<=m && t2 <= h;) {
+            for(; t1 <= m && t2 <= h;) {
                 if(b1[t1] <= b1[t2])
                     b2[t_pos++] = b1[t1++];
                 else

@@ -134,3 +134,9 @@ void PrintVector(vector<T> vec) {
     }
     cout << " ]" << endl;
 }
+
+template <typename T>
+inline T min(const T a1,const T a2,const T a3,const T a4) {
+    T t1 = min(a1, a2), t2 = min(a3, a4);
+    return min(t1, t2);
+}
