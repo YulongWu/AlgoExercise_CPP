@@ -52,7 +52,7 @@ int main() {
     printf("dest3 address: %p\n", dest3);
     static char sstr[] = "abcc";
     char *p = (char *)src;
-    *p = 'd';
+    *p = 'd'; //bus error: src is a literal variable
     printf("sstr address: %p, sstr: %s\n", sstr, sstr);
     printf("address of sstr pointer: %p\n", &sstr);
     getchar();
