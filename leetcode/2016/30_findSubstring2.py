@@ -1,3 +1,4 @@
+# updated info in 16.04.30: there's a better solution optimized by this solution: https://leetcode.com/discuss/61782/ac-python-80ms-solution-dictionary-and-two-pointers
 class Solution(object):
     def findSubstring(self, s, words):
         """

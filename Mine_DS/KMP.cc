@@ -5,6 +5,9 @@
 int KMP::KMPMatch(const string s, const string pattern) {
     cout << "enter KMPMatch..." << endl;
     GetNextBetter(pattern);
+    //GetNext(pattern);
+    if (!next_) 
+        return -1;
     if(s.length() == 0)
         throw -1;      //error
     int i=0, j=0;
@@ -24,6 +27,7 @@ int KMP::KMPMatch(const string s, const string pattern) {
 }
 
 void KMP::GetNext(const  string pattern) {
+    cout << "enter GetNext..." << endl;
     if(pattern.length() < 1)
         return;
     if(next_)
@@ -43,9 +47,16 @@ void KMP::GetNext(const  string pattern) {
         }
         next_[next_index] = next_value;
     }
+    /* for debug */
+    cout << "generated pattern string: " << endl;
+    for (int i = 0; i < pattern.length(); ++i) {
+        cout << next_[i] << " ";
+    }
+    cout << endl;
+    //for debug end
 }
 
-void KMP::GetNextBetter(const string pattern) {
+void KMP::GetNextBetter(const string &pattern) {
     cout << "enter GetNextBetter..." << endl;
     if (pattern.length() < 1)
         return;
@@ -54,8 +65,8 @@ void KMP::GetNextBetter(const string pattern) {
     next_ = new int[pattern.length()]; //error1: forgot to new next_, which result in dangling pointer and segmentation fault
     int i=0, j=0;
     next_[0] = 0;
-    while (i < pattern.length()) {
-        cout << "i=" << i << "; j=" << j << endl;
+    while (i < pattern.length() - 1) {
+        //cout << "i=" << i << "; j=" << j << endl;
         if (j == 0 || pattern[i] == pattern[j]) {
             if(i != j && pattern[i] == pattern[j]) ++j;
             ++i; 
@@ -65,13 +76,13 @@ void KMP::GetNextBetter(const string pattern) {
             j = next_[j];
         }
     }
-    /* for debug
+    /* for debug */
     cout << "generated pattern string: " << endl;
     for (int i = 0; i < pattern.length(); ++i) {
         cout << next_[i] << " ";
     }
     cout << endl;
-    */ //for debug end
+    //for debug end
 }
 
 int main() {

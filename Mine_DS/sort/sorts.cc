@@ -23,11 +23,11 @@ void SimpleInsertSort(T a[], int len, int (*comp)(T, T)) {
     for(int i=2; i<=len; ++i) {
         if(comp(a[i], a[i-1]) < 0) {  //***this improvement is easy to forget, but this improvement will make the program looks more complicated, the version without it see bolow.
             a[0] = a[i];
-            int j=i;
-            for(; comp(a[j-1],a[0])>0; --j) {
-                a[j] = a[j-1];
+            int j=i-1;
+            for(; comp(a[j],a[0])>0; --j) {
+                a[j+1] = a[j];
             }
-            a[j] = a[0];
+            a[j+1] = a[0];
         }
     }
 }
@@ -38,10 +38,10 @@ void SimpleInsertSort_v2(T a[], int len, int (*comp)(T, T)) {
         return;
     for(int i=2; i <= len; ++i) {
         a[0] = a[i];
-        int j = i;
-        for(j=i; comp(a[j-1], a[0]) > 0; --j)
-            a[j] = a[j-1];
-        a[j] = a[0];
+        int j = i-1;
+        for(; comp(a[j], a[0]) > 0; --j)
+            a[j+1] = a[j];
+        a[j+1] = a[0];
     }
 }
 
@@ -57,7 +57,7 @@ void BinaryInsertSort(T a[], int len, int (*comp)(T, T)) {
             int low = 1, high = i-1;
             while(low <= high) {  //*don't forget "="
                 int mid = (low+high)/2;
-                if(comp(a[i], a[mid]) >= 0)  //***in order to make sort stable, we should consider a[mid] < a[i] and a[mid] == a[i] the same.
+                if(comp(a[mid], a[i]) < 0)  //***in order to make sort stable, we should consider a[mid] < a[i] and a[mid] == a[i] the same.
 //** It's a[i] >= a[mid], not a[mid] >= a[i]!
                     low = mid+1;
                 else
@@ -122,6 +122,7 @@ int Partition(T a[], int start, int end) {
 }
 /*
  * This partition method is easier to be understand than previous one, but it result in more times of movements for many cases.
+ * 20160528: this partition is not correct
  */
 template <typename T>
 int Partition_v2(T a[], int start, int end) {
@@ -141,7 +142,7 @@ template <typename T>
 void QSort(T a[], int start, int end) {
     int split;
     if(start < end) {
-        split = Partition_v2<T>(a, start, end);
+        split = Partition<T>(a, start, end);
         QSort(a, start, split-1);
         QSort(a, split+1, end);
     }
@@ -173,6 +174,7 @@ void SimpleSelectSort(T a[], int len) {
         }
     }
 }
+
 // Following is Heap Sort code.
 void MaxHeapAdjust(int a[], int len, int root_pos) {
     if(!a || len <=0 || root_pos<1 || root_pos>len) 
