@@ -4,6 +4,8 @@ class Solution(object):
         :type n: int
         :rtype: List[str]
         runtime: 44 ms (non-recursive)
+        b: balance
+        k: left parenthesises
         """
         res = [('', 0, n)]
         maxn = n
