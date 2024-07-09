@@ -1,14 +1,14 @@
 class Solution:
-    # @return a tuple, (index1, index2)
-    def twoSum(self, num, target):
-        num_set = {}
-        for i in range(len(num)):
-            if target - num[i] in num_set:
-                return num_set[target - num[i]], i + 1
+    def twoSum(self, nums: List[int], target:int) -> List[int]:
+        nums_set = {}
+        for i in range(len(nums)):
+            complement = target - nums[i]
+            if complement in nums_set:
+                return nums_set[complement], i + 1
             else:
-                num_set[num[i]] = i + 1;
-        return 0, 0
+                nums_set[nums[i]] = i + 1
+
 if __name__ == "__main__":
-    ins = Solution();
-    res = ins.twoSum([15,2,11,7], 9)
-    print "[ {0:d}, {1:d} ]".format(res[0], res[1])
+    ins = Solution()
+    res = ins.twoSum([15, 2, 11, 7], 9)
+    print("[{0}, {1}]".format(res[0], res[1]))
